@@ -11,7 +11,7 @@ public class Brick {
 	int						batteryLevel;
 	ArrayList<Message>		commandQueue;
 	
-	//test push, hi jon, hi mohammed
+	//test two
 	void executeCommand() {
 		
 	}
