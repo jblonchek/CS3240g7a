@@ -15,7 +15,7 @@ public class Packet implements Serializable {
 	
 	private static int lastSeqno = 0;
 
-	public Date timestamp;
+	public long timestamp;
 	public int seqno;
 	public int ackno;
 	public int checksum;
@@ -29,7 +29,7 @@ public class Packet implements Serializable {
 	public Message msg;
 	
 	public Packet(PacketType packetType, Message msg){
-		timestamp = new Date();
+		timestamp = System.currentTimeMillis();
 		seqno =  ++ lastSeqno;
 		ackno = 0;
 		type = packetType;
@@ -39,7 +39,7 @@ public class Packet implements Serializable {
 	
 	//used for creating EACK/ENACK packets
 	public Packet(PacketType packetType, Message msg, int seqno, int ackno){
-		timestamp = new Date();
+		timestamp = System.currentTimeMillis();
 		this.seqno = seqno;
 		this.ackno = ackno;
 		type = packetType;
@@ -95,12 +95,8 @@ public class Packet implements Serializable {
 
 	public Packet(byte[] header, InputStream is) throws IOException {
 		try{
-			long ts = byteArrayToLong(slice(header, 0, 8));
 			
-			timestamp = new Date();
-			timestamp.setSeconds((int) ((ts/1000)%60));
-			timestamp.setMinutes((int) ((ts/1000)/60)%60);
-			timestamp.setHours((int) ((((ts/1000)/60)/60)%24));
+			timestamp = byteArrayToLong(slice(header, 0, 8));
 			seqno = byteArrayToInt(slice(header,8, 4));
 			ackno = byteArrayToInt(slice(header, 12, 4));
 			checksum = byteArrayToInt(slice(header, 16, 4));
@@ -133,7 +129,6 @@ public class Packet implements Serializable {
 	
 	private byte[] longToByteArray(long l){
 		byte[] by = new byte[8];
-		long tmp = 0;
 		for (int i = by.length-1; i >= 0; i--)
 		{	
 			by[i] = (byte)(l & 0xff);
