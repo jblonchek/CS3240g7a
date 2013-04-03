@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 
 public abstract class Message {
 
@@ -10,8 +11,8 @@ public abstract class Message {
 		byte[] by = new byte[8];
 		for (int i = by.length-1; i >= 0; i--)
 		{	
-			by[i] = (byte)(l & 0xff);
-			l = l >> 8;
+			by[i] = (byte)(l & 0x00ff);
+			l = l >>> 8;
 		}
 
 		return by;
@@ -22,8 +23,8 @@ public abstract class Message {
 		long l = Double.doubleToLongBits(d);
 		for (int i = by.length-1; i >= 0; i--)
 		{	
-			by[i] = (byte)(l & 0xff);
-			l = l >> 8;
+			by[i] = (byte)(l & 0x00ff);
+			l = l >>> 8;
 		}
 
 		return by;
@@ -34,7 +35,7 @@ public abstract class Message {
 		for (int i = by.length-1; i >= 0; i--)
 		{			
 			by[i] = (byte)(l & 0x000000ff);
-			l = l >> 8;
+			l = l >>> 8;
 		}
 		return by;
 	}
@@ -43,18 +44,20 @@ public abstract class Message {
 		long value = 0;
 		
 		for(int i = 0; i < 8; i++){
-			value = (value << 8) + b[i];
+			value = (value << 8) | (0x00ff & (long)b[i]);
 		}
 		
 		
 		return value;
+		//return (new BigInteger(b)).longValue();
+
 	}
 	
 	private static double byteArrayToDouble(byte[] b){
 		long value = 0;
 		
 		for(int i = 0; i < 8; i++){
-			value = (value << 8) + b[i];
+			value = (value << 8) + (0x00ff & (long)b[i]);
 		}
 		
 		
@@ -65,11 +68,13 @@ public abstract class Message {
 		int value = 0;
 		
 		for(int i = 0; i < 4; i++){
-			value = (value << 8) + b[i];
+			value = (value << 8) + (0x00ff & (int)b[i]);
 		}
 		
 		
 		return value;
+		//return (new BigInteger(b)).intValue();
+
 	}
 	
 	private static byte[] slice(byte[] b, int offset, int length) {

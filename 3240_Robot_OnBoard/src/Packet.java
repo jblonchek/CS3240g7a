@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 
 
@@ -131,8 +132,20 @@ public class Packet implements Serializable {
 		byte[] by = new byte[8];
 		for (int i = by.length-1; i >= 0; i--)
 		{	
-			by[i] = (byte)(l & 0xff);
-			l = l >> 8;
+			by[i] = (byte)(l & 0x00ff);
+			l = l >>> 8;
+		}
+
+		return by;
+	}
+	
+	private byte[] doubleToByteArray(double d){
+		byte[] by = new byte[8];
+		long l = Double.doubleToLongBits(d);
+		for (int i = by.length-1; i >= 0; i--)
+		{	
+			by[i] = (byte)(l & 0x00ff);
+			l = l >>> 8;
 		}
 
 		return by;
@@ -143,7 +156,7 @@ public class Packet implements Serializable {
 		for (int i = by.length-1; i >= 0; i--)
 		{			
 			by[i] = (byte)(l & 0x000000ff);
-			l = l >> 8;
+			l = l >>> 8;
 		}
 		return by;
 	}
@@ -152,22 +165,37 @@ public class Packet implements Serializable {
 		long value = 0;
 		
 		for(int i = 0; i < 8; i++){
-			value = (value << 8) + b[i];
+			value = (value << 8) | (0x00ff & (long)b[i]);
 		}
 		
 		
 		return value;
+		//return (new BigInteger(b)).longValue();
+
+	}
+	
+	private double byteArrayToDouble(byte[] b){
+		long value = 0;
+		
+		for(int i = 0; i < 8; i++){
+			value = (value << 8) + (0x00ff & (long)b[i]);
+		}
+		
+		
+		return Double.longBitsToDouble(value);
 	}
 	
 	private int byteArrayToInt(byte[] b){
 		int value = 0;
 		
 		for(int i = 0; i < 4; i++){
-			value = (value << 8) + b[i];
+			value = (value << 8) + (0x00ff & (int)b[i]);
 		}
 		
 		
 		return value;
+		//return (new BigInteger(b)).intValue();
+
 	}
 	
 	private byte[] slice(byte[] b, int offset, int length) {

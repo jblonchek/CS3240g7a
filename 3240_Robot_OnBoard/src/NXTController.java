@@ -11,7 +11,13 @@ public class NXTController {
 		//Button.waitForAnyPress();
 		
 		CommThread commThread = new CommThread();
-		commThread.start();	
+		CommThread.end = false;
+		commThread.start();
+		
+		Button.waitForAnyPress();
+		
+		CommThread.end = true;
+		
 
 	}
 
