@@ -1,30 +1,50 @@
 import lejos.nxt.Motor;
+import lejos.nxt.NXTRegulatedMotor;
+import lejos.robotics.navigation.DifferentialPilot;
 
 import java.util.*;
 
 public class Brick {
-	Motor 					motorA;
-	Motor 					motorB;
-	Motor 					motorC;
+	ArrayList<Message> 		brickQueue= new ArrayList<Message>();
+	NXTRegulatedMotor 		motorA=Motor.A;
+	NXTRegulatedMotor 		motorB=Motor.B;
+	NXTRegulatedMotor 		motorC=Motor.C;
 	ArrayList<SensorData> 	currentData;
 	String					screenDisplay;
 	int						batteryLevel;
 	ArrayList<Message>		commandQueue;
-	
+	float					wheelDiameter=56f;
+	float					trackWidth=110f;
+	int						averageSpeed=10;
+	DifferentialPilot pilot= new DifferentialPilot(
+								wheelDiameter,trackWidth,motorA,motorC
+								);
 	//test three
-	void executeCommand() {
+	
+	boolean addToQueue(Message message){
+		brickQueue.add(message);
+		return true;
 		
 	}
 	
-	boolean move(int rotationDegrees, int distance, int speed) {
-		return false;
+	boolean move(int rotationDegrees, double dist, int speed) {
+//		if (speed!=0){
+//			pilot.setTravelSpeed(speed);
+//		}
+//		pilot.rotate(rotationDegrees);
+		pilot.travel(dist*1000);
+		pilot.stop();
+//		pilot.setTravelSpeed(averageSpeed);
+		
+		return true;
 	}
 	
-	boolean turn(int rotationDegrees) {
-		return false;
+	boolean turn(double angle) {
+		pilot.rotate(angle);
+		return true;
 	}
 	
-	boolean clear() {
+	boolean clearQueue() {
 		return false;
 	}
 	
@@ -48,7 +68,7 @@ public class Brick {
 		return false;
 	}
 	
-	boolean readStep() {
+	boolean readSensor() {
 		return false;
 	}
 	

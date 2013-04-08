@@ -7,7 +7,6 @@
  * SENSORLS		Light sensor
  * 
  * @author cceckman
- *
  */
 public enum Sensor {
 	SENSORCS,
