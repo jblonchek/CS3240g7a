@@ -1,7 +1,7 @@
 import lejos.nxt.ColorSensor.Color;
 
 
-public class ColorSensor implements SensorData{
+public class ColorSensorClass implements SensorData{
 
 	Color color;
 	
