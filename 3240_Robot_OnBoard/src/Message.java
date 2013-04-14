@@ -93,6 +93,7 @@ public abstract class Message {
 		
 		String b = "";
 		b += new String(intToByteArray(type.ordinal()));
+		b += new String(intToByteArray(pri.ordinal()));
 		b += new String(sub);
 		while(b.length() < sub.length + Integer.SIZE/8){
 			b += 0x00;
