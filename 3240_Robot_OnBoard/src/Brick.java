@@ -5,37 +5,36 @@ import lejos.robotics.navigation.DifferentialPilot;
 import java.util.*;
 
 public class Brick {
-	ArrayList<Message> 		brickQueue= new ArrayList<Message>();
-	NXTRegulatedMotor 		motorA=Motor.A;
-	NXTRegulatedMotor 		motorB=Motor.B;
-	NXTRegulatedMotor 		motorC=Motor.C;
-	ArrayList<SensorData> 	currentData;
+	CommandQueue 			brickQueue;
+	NXTRegulatedMotor 		motorA = Motor.A;
+	NXTRegulatedMotor 		motorB = Motor.B;
+	NXTRegulatedMotor 		motorC = Motor.C;
+	float					wheelDiameter = 56f;
+	float					trackWidth = 110f;
+	int						averageSpeed = 10;
 	String					screenDisplay;
 	int						batteryLevel;
+	ArrayList<SensorData> 	currentData;
 	ArrayList<Message>		commandQueue;
-	float					wheelDiameter=56f;
-	float					trackWidth=110f;
-	int						averageSpeed=10;
-	DifferentialPilot pilot= new DifferentialPilot(
-								wheelDiameter,trackWidth,motorA,motorC
-								);
-	//test three
+
+	
+	
+	DifferentialPilot pilot= new DifferentialPilot(wheelDiameter,trackWidth,motorA,motorC);
+	
+	public Brick(CommThread thread){
+		brickQueue = new CommandQueue(thread);
+	}
 	
 	boolean addToQueue(Message message){
-		brickQueue.add(message);
+		brickQueue.enqueue(message);
 		return true;
 		
 	}
 	
 	boolean move(int rotationDegrees, double dist, int speed) {
-//		if (speed!=0){
-//			pilot.setTravelSpeed(speed);
-//		}
-//		pilot.rotate(rotationDegrees);
+
 		pilot.travel(dist*1000);
 		pilot.stop();
-//		pilot.setTravelSpeed(averageSpeed);
-		
 		return true;
 	}
 	
@@ -45,46 +44,33 @@ public class Brick {
 	}
 	
 	boolean clearQueue() {
+		brickQueue.clearQ();
 		return false;
 	}
 	
 	boolean startQueue() {
+		brickQueue.startQ();
 		return false;
 	}
 	
 	boolean abortQueue() {
+		brickQueue.abortQ();
 		return false;
 	}
 	
 	boolean pauseQueue() {
+		brickQueue.pauseQ();
 		return false;
 	}
 	
 	boolean stepQueue() {
+		brickQueue.stepQ();
 		return false;
 	}
 	
 	boolean goToStep() {
-		return false;
-	}
-	
-	boolean readSensor() {
-		return false;
-	}
-	
-	boolean iterate() {
-		return false;
-	}
-	
-	boolean readRobotData() {
-		return false;
-	}
-	
-	boolean updateSensorData(SensorData sensor) {
-		return false;
-	}
-	
-	boolean displayToScreen() {
+		brickQueue.gotos();
 		return false;
 	}
 }
+	

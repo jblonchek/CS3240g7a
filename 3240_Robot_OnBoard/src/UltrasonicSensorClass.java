@@ -6,7 +6,7 @@ public class UltrasonicSensorClass implements SensorData{
 	int range;
 	double currentReading;
 	ArrayList<Double> pastReadings;
-	UltrasonicSensor sonic=new UltrasonicSensor(SensorPort.S1);
+	UltrasonicSensor sonic=new UltrasonicSensor(SensorPort.S1); 
 	@Override
 	public double update() {
 		//int[] data = sonic.ping();

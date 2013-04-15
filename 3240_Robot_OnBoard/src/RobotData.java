@@ -1,4 +1,4 @@
-public enum RoboData {
+public enum RobotData {
 	FlashMemory,
 	FreeMemory,
 	BatteryStrength,

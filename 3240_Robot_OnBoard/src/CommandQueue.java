@@ -159,11 +159,11 @@ public class CommandQueue extends Thread {
 											// ColorSensorClass we use;									// explained in detail in comment in
 											// CommThread2
 		} else if (s == Sensor.SENSORLS) {
-			//sdata = new LightSensorClass();
+			sdata = new LightSensorClass();
 		} else if (s == Sensor.SENSORSS) {
-			//sdata = new SoundSensorClass();
+			sdata = new SoundSensorClass();
 		} else if (s == Sensor.SENSORTS) {
-			//sdata = new TouchSensorClass();
+			sdata = new TouchSensorClass();
 		} else if (s == Sensor.SENSORUS) {
 			sdata = new UltrasonicSensorClass();
 		}

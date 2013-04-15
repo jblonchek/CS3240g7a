@@ -2,21 +2,29 @@ import lejos.nxt.Button;
 
 public class NXTController {
 
-	/**
-	 * @param args
-	 */
+	final static boolean DEBUG = false;
+	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		//System.out.println("Hello World");
-		//Button.waitForAnyPress();
 		
-		CommThread commThread = new CommThread();
-		CommThread.end = false;
-		commThread.start();
+		//Start a new Comm Thread to begin program.
 		
-		Button.waitForAnyPress();
-		
-		CommThread.end = true;
+		if(DEBUG){
+			//DebugCommThread commThread = new CommThread();
+			//DebugCommThread.end = false;
+//			commThread.start();
+//			Button.waitForAnyPress();	
+//			CommThread.end = true;
+			
+		}else{
+			CommThread commThread = new CommThread();
+			CommThread.end = false;
+			commThread.start();
+			
+			Button.waitForAnyPress();
+			
+			CommThread.end = true;
+			
+		}
 		
 
 	}

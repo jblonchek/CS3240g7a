@@ -375,16 +375,16 @@ public abstract class Message {
 	}
 
 	public static class ReadrMessage extends Message {
-		public RoboData param;
+		public RobotData param;
 		double value;
 
 		public ReadrMessage(byte[] b) {
-			param = RoboData.values()[byteArrayToInt(slice(b, 0, 4))];//b.getInt()];
+			param = RobotData.values()[byteArrayToInt(slice(b, 0, 4))];//b.getInt()];
 			value = byteArrayToDouble(slice(b, 4, 8));//b.getDouble();
 			type = MessageType.READR;
 		}
 		
-		public ReadrMessage(RoboData param, double value){
+		public ReadrMessage(RobotData param, double value){
 			this.param = param;
 			this.value = value;
 			type = MessageType.READS;
