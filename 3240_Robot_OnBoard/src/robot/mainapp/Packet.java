@@ -1,3 +1,4 @@
+package robot.mainapp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -29,6 +30,7 @@ public class Packet implements Serializable {
 
 	public Message msg;
 	
+	/* Constructor for normal packets in the system. No updates to ackno. */
 	public Packet(PacketType packetType, Message msg){
 		timestamp = System.currentTimeMillis();
 		seqno =  ++ lastSeqno;
@@ -38,7 +40,7 @@ public class Packet implements Serializable {
 		checksum = 0;
 	}
 	
-	//used for creating EACK/ENACK packets
+	/* Constructor used for creating EACK/ENACK packets */
 	public Packet(PacketType packetType, Message msg, int seqno, int ackno){
 		timestamp = System.currentTimeMillis();
 		this.seqno = seqno;
@@ -60,12 +62,12 @@ public class Packet implements Serializable {
 
 		checksum = 0;
 		
-		bytes += new String(longToByteArray(System.currentTimeMillis()));
-		bytes += new String(intToByteArray(seqno));
-		bytes += new String(intToByteArray(ackno));
-		bytes += new String(intToByteArray(checksum));
-		bytes += new String(intToByteArray(type.ordinal()));
-		bytes += new String(intToByteArray(msgbytes.length));
+		bytes += new String(ByteArrayUtils.longToByteArray(System.currentTimeMillis()));
+		bytes += new String(ByteArrayUtils.intToByteArray(seqno));
+		bytes += new String(ByteArrayUtils.intToByteArray(ackno));
+		bytes += new String(ByteArrayUtils.intToByteArray(checksum));
+		bytes += new String(ByteArrayUtils.intToByteArray(type.ordinal()));
+		bytes += new String(ByteArrayUtils.intToByteArray(msgbytes.length));
 		bytes += new String(msgbytes);
 
 		byte[] res = bytes.getBytes();
@@ -74,13 +76,14 @@ public class Packet implements Serializable {
 				checksum += res[i];
 			}
 		}
-		bytes = bytes.substring(0, 16) + new String(intToByteArray(checksum)) + bytes.substring(20);
+		bytes = bytes.substring(0, 16) + new String(ByteArrayUtils.intToByteArray(checksum)) + bytes.substring(20);
 		while(bytes.length() < HEADERSIZE + msgbytes.length){
 			bytes+= 0x00;
 		}
 		return bytes.getBytes();
 	}
 
+	/* Reads a sequence of bytes from an InputStream (synchronously) and decodes them into a Packet. */
 	public static Packet deserialize(InputStream is) {
 		// Read the first 28 bytes
 		byte[] header = new byte[HEADERSIZE];
@@ -88,32 +91,33 @@ public class Packet implements Serializable {
 			is.read(header, 0, HEADERSIZE);
 			return new Packet(header, is);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 	}
 
+	/*Decodes a byte array into a packet header, then (if the Packet has a nonzero messsage length) 
+	 * synchronously reads more bytes from the given InputStream to construct an encapsulated Message.
+	 */
 	public Packet(byte[] header, InputStream is) throws IOException {
 		try{
 			
-			timestamp = byteArrayToLong(slice(header, 0, 8));
-			seqno = byteArrayToInt(slice(header,8, 4));
-			ackno = byteArrayToInt(slice(header, 12, 4));
-			checksum = byteArrayToInt(slice(header, 16, 4));
-			type = PacketType.values()[byteArrayToInt(slice(header, 20, 4))];
-			msg = Message.deserialize(byteArrayToInt(slice(header, 24, 4)), is);
+			timestamp = ByteArrayUtils.byteArrayToLong(ByteArrayUtils.slice(header, 0, 8));
+			seqno = ByteArrayUtils.byteArrayToInt(ByteArrayUtils.slice(header,8, 4));
+			ackno = ByteArrayUtils.byteArrayToInt(ByteArrayUtils.slice(header, 12, 4));
+			checksum = ByteArrayUtils.byteArrayToInt(ByteArrayUtils.slice(header, 16, 4));
+			type = PacketType.values()[ByteArrayUtils.byteArrayToInt(ByteArrayUtils.slice(header, 20, 4))];
+			msg = Message.deserialize(ByteArrayUtils.byteArrayToInt(ByteArrayUtils.slice(header, 24, 4)), is);
 		}catch(Exception e){
 			throw new IOException("");
 		}
-		// compute checksum
+
 		int nowcheck = msg.checksum;
 		for (int i = 0; i < header.length; i++) {
 			if (i < 16 || i > 19) {
 				nowcheck += header[i];
 			}
 		}
-		// NB: checksum is the sum of all *bytes*, not all *ints*
 
 		if (checksum != nowcheck) {
 			throw new IOException(
@@ -128,84 +132,6 @@ public class Packet implements Serializable {
 				+ type + ", msg=" + msg + "]";
 	}
 	
-	private byte[] longToByteArray(long l){
-		byte[] by = new byte[8];
-		for (int i = by.length-1; i >= 0; i--)
-		{	
-			by[i] = (byte)(l & 0x00ff);
-			l = l >>> 8;
-		}
-
-		return by;
-	}
-	
-	private byte[] doubleToByteArray(double d){
-		byte[] by = new byte[8];
-		long l = Double.doubleToLongBits(d);
-		for (int i = by.length-1; i >= 0; i--)
-		{	
-			by[i] = (byte)(l & 0x00ff);
-			l = l >>> 8;
-		}
-
-		return by;
-	}
-	
-	private byte[] intToByteArray(int l){
-		byte[] by = new byte[4];
-		for (int i = by.length-1; i >= 0; i--)
-		{			
-			by[i] = (byte)(l & 0x000000ff);
-			l = l >>> 8;
-		}
-		return by;
-	}
-	
-	private long byteArrayToLong(byte[] b){
-		long value = 0;
-		
-		for(int i = 0; i < 8; i++){
-			value = (value << 8) | (0x00ff & (long)b[i]);
-		}
-		
-		
-		return value;
-		//return (new BigInteger(b)).longValue();
-
-	}
-	
-	private double byteArrayToDouble(byte[] b){
-		long value = 0;
-		
-		for(int i = 0; i < 8; i++){
-			value = (value << 8) + (0x00ff & (long)b[i]);
-		}
-		
-		
-		return Double.longBitsToDouble(value);
-	}
-	
-	private int byteArrayToInt(byte[] b){
-		int value = 0;
-		
-		for(int i = 0; i < 4; i++){
-			value = (value << 8) + (0x00ff & (int)b[i]);
-		}
-		
-		
-		return value;
-		//return (new BigInteger(b)).intValue();
-
-	}
-	
-	private byte[] slice(byte[] b, int offset, int length) {
-		byte[] ret = new byte[length];
-		for(int i = 0; i < length; i++){
-			ret[i] = b[offset + i];
-		}
-		return ret;
-		
-	}
 
 	
 }
